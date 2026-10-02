@@ -1,0 +1,102 @@
+{
+  "batch_name": "rerun_iclr2027_additional_dataset_models_blackbox_pe_l14_final",
+  "batch_output_dir": "runs/train_models",
+  "gpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "workers_per_gpu": 2,
+  "max_parallel": 8,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "defaults": {
+    "window_size": 32,
+    "data_root": "data/embeddings",
+    "horizon": 3,
+    "history_length": 5,
+    "learning_rate": 0.0001,
+    "weight_decay": 0.0001,
+    "batch_size": 256,
+    "num_epochs": 200,
+    "patience": 30,
+    "early_stopping_metric": "val_forecast_top3_accuracy",
+    "wandb_project": "TRACE-ICLR2027",
+    "wandb_mode": "offline",
+    "binary": false,
+    "learn_concept_threshold": true,
+    "teacher_forcing_start_ratio": 0.5,
+    "teacher_forcing_end_ratio": 0.0,
+    "concept_forecast_loss_weight": 0.5,
+    "concept_forecast_loss_deadzone_std": 0.0,
+    "forecast_transition_tolerance_radius": 0,
+    "forecast_transition_tolerance_weight": 0.0,
+    "graph_edge_regularization_weight": 0.0,
+    "graph_intervention_loss_weight": 0.0,
+    "graph_intervention_margin": 0.01,
+    "graph_intervention_edges_per_batch": 2,
+    "graph_disabled_eval": false,
+    "graph_corruption_eval": false,
+    "classifier_l1_weight": 0.001,
+    "activity_sil_false_positive_penalty": 0.5,
+    "activity_class_weighting": false,
+    "activity_class_weight_cap": 5.0,
+    "forecast_sil_false_positive_penalty": 0.5,
+    "forecast_class_weighting": false,
+    "forecast_class_weight_cap": 5.0,
+    "train_sampling_strategy": "uniform",
+    "transition_sampler_boundary_radius": 2,
+    "transition_sampler_strength": 3.0,
+    "transition_sampler_rare_alpha": 0.5,
+    "generate_embeddings": false,
+    "embedding_batch_size": 256,
+    "embedding_num_gpus": 0,
+    "enable_tf32": true,
+    "random_windows": true,
+    "backbone": "pe-l14",
+    "activity_label_mode": "action",
+    "activity_label_fill_mode": "sil"
+  },
+  "runs": [
+    {
+      "name": "gtea_s1_slowfast_tcn_seed{seed}",
+      "dataset": "gtea_gaze",
+      "test_split": "s1",
+      "concept_set": "gtea_gaze_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/GTEA_Gaze/True_32_clip_pe-l14_state.pkl",
+      "activity_label_mode": "verb",
+      "base_method": "feature_slowfast_tcn"
+    },
+    {
+      "name": "gtea_s1_feature_transformer_seed{seed}",
+      "dataset": "gtea_gaze",
+      "test_split": "s1",
+      "concept_set": "gtea_gaze_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/GTEA_Gaze/True_32_clip_pe-l14_state.pkl",
+      "activity_label_mode": "verb",
+      "base_method": "feature_transformer"
+    },
+    {
+      "name": "epic_kitchens_s1_slowfast_tcn_seed{seed}",
+      "dataset": "epic_kitchens_100",
+      "test_split": "s1",
+      "concept_set": "epic_kitchens_100_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/EPIC-KITCHENS-100/True_32_clip_pe-l14_state.pkl",
+      "base_method": "feature_slowfast_tcn"
+    },
+    {
+      "name": "epic_kitchens_s1_feature_transformer_seed{seed}",
+      "dataset": "epic_kitchens_100",
+      "test_split": "s1",
+      "concept_set": "epic_kitchens_100_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/EPIC-KITCHENS-100/True_32_clip_pe-l14_state.pkl",
+      "base_method": "feature_transformer"
+    }
+  ]
+}

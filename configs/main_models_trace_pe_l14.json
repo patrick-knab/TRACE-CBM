@@ -1,0 +1,144 @@
+{
+  "batch_name": "iclr2027_main_dataset_models_trace_pe_l14",
+  "batch_output_dir": "runs/train_models",
+  "gpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "workers_per_gpu": 2,
+  "max_parallel": 8,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "defaults": {
+    "window_size": 32,
+    "data_root": "data/embeddings",
+    "horizon": 3,
+    "history_length": 5,
+    "learning_rate": 0.0001,
+    "weight_decay": 0.0001,
+    "batch_size": 256,
+    "num_epochs": 200,
+    "patience": 30,
+    "early_stopping_metric": "val_forecast_top3_accuracy",
+    "wandb_project": "TRACE-ICLR2027",
+    "wandb_mode": "offline",
+    "binary": false,
+    "learn_concept_threshold": true,
+    "teacher_forcing_start_ratio": 0.5,
+    "teacher_forcing_end_ratio": 0.0,
+    "concept_forecast_loss_weight": 0.5,
+    "concept_forecast_loss_deadzone_std": 0.0,
+    "forecast_transition_tolerance_radius": 1,
+    "forecast_transition_tolerance_weight": 0.25,
+    "graph_edge_regularization_weight": 0.0,
+    "graph_intervention_loss_weight": 0.0,
+    "graph_intervention_margin": 0.01,
+    "graph_intervention_edges_per_batch": 2,
+    "graph_disabled_eval": false,
+    "graph_corruption_eval": false,
+    "classifier_l1_weight": 0.001,
+    "activity_sil_false_positive_penalty": 0.5,
+    "activity_class_weighting": false,
+    "activity_class_weight_cap": 5.0,
+    "forecast_sil_false_positive_penalty": 0.5,
+    "forecast_class_weighting": false,
+    "forecast_class_weight_cap": 5.0,
+    "train_sampling_strategy": "uniform",
+    "transition_sampler_boundary_radius": 2,
+    "transition_sampler_strength": 3.0,
+    "transition_sampler_rare_alpha": 0.5,
+    "generate_embeddings": false,
+    "embedding_batch_size": 256,
+    "embedding_num_gpus": 0,
+    "enable_tf32": true,
+    "random_windows": true,
+    "backbone": "pe-l14",
+    "activity_label_mode": "action",
+    "activity_label_fill_mode": "sil",
+    "base_method": "trace",
+    "model_hparams": {
+      "future_concept_horizons": [
+        1,
+        2,
+        3
+      ],
+      "st_graph_layers": 1,
+      "st_task_graph_layers": 1,
+      "st_spatial_top_k": 20,
+      "st_temporal_top_k": 20,
+      "st_enable_cross_temporal": true,
+      "st_cross_temporal_top_k": 20,
+      "st_state_activation": "bounded_logit",
+      "st_prediction_transform": "logit",
+      "motif_z_attention_layers": 0,
+      "edge_gate_init": 0,
+      "st_residual_gate_init": 0,
+      "st_topk_warmup_epochs": 20,
+      "st_topk_ramp_epochs": 30,
+      "st_topk_training_mode": "gradual",
+      "st_activity_feedback_mode": "sparse_label_to_concept",
+      "st_activity_feedback_top_k": 40,
+      "st_activity_feedback_gate_init": 0.0,
+      "st_activity_feedback_history_steps": 3,
+      "st_activity_feedback_history_gate_init": 0.0
+    }
+  },
+  "runs": [
+    {
+      "name": "barista_s1_trace_seed{seed}",
+      "dataset": "barista",
+      "test_split": "s1",
+      "concept_set": "barista_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/Barista/True_32_clip_pe-l14_state.pkl"
+    },
+    {
+      "name": "breakfast_s1_trace_seed{seed}",
+      "dataset": "Breakfast",
+      "test_split": "official_s1",
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/Breakfast/True_32_clip_pe-l14.pkl"
+    },
+    {
+      "name": "breakfast_s2_trace_seed{seed}",
+      "dataset": "Breakfast",
+      "test_split": "official_s2",
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/Breakfast/True_32_clip_pe-l14.pkl"
+    },
+    {
+      "name": "breakfast_s3_trace_seed{seed}",
+      "dataset": "Breakfast",
+      "test_split": "official_s3",
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/Breakfast/True_32_clip_pe-l14.pkl"
+    },
+    {
+      "name": "breakfast_s4_trace_seed{seed}",
+      "dataset": "Breakfast",
+      "test_split": "official_s4",
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/Breakfast/True_32_clip_pe-l14.pkl"
+    },
+    {
+      "name": "mpii_attr_trace_seed{seed}",
+      "dataset": "mpii_cooking_2",
+      "test_split": "attr",
+      "concept_set": "mpii_cooking_2_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/MPII_Cooking_2/True_32_clip_pe-l14_state.pkl"
+    },
+    {
+      "name": "mpii_dishes_trace_seed{seed}",
+      "dataset": "mpii_cooking_2",
+      "test_split": "dishes",
+      "concept_set": "mpii_cooking_2_iterative_qwen35_pe_l14_128_v1",
+      "embedding_path": "data/embeddings/MPII_Cooking_2/True_32_clip_pe-l14_state.pkl"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "concept_set_suffix": "_iterative_qwen35_pe_l14_128_v1",
+  "seeds": [42, 43, 44, 45, 46],
+  "datasets": [
+    {
+      "key": "gtea_s1",
+      "dataset": "gtea_gaze",
+      "splits": ["s1"],
+      "concept_set": "gtea_gaze_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "epic_kitchens_s1",
+      "dataset": "epic_kitchens_100",
+      "splits": ["s1"],
+      "concept_set": "epic_kitchens_100_iterative_qwen35_pe_l14_128_v1"
+    }
+  ]
+}

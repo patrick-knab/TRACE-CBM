@@ -1,0 +1,23 @@
+# Versions used for the final repository audit. Install a CUDA-compatible PyTorch build.
+torch==2.10.0
+torchvision==0.25.0
+torchcodec==0.10.0
+numpy==2.4.1
+scipy==1.17.0
+scikit-learn==1.8.0
+pandas==3.0.0
+h5py==3.16.0
+opencv-python==4.13.0.92
+Pillow==12.1.0
+matplotlib==3.10.8
+streamlit==1.57.0
+altair==6.1.0
+wandb==0.25.0
+transformers==5.1.0
+huggingface-hub==1.8.0
+clip==1.0
+ftfy==6.3.1
+regex==2025.11.3
+tqdm==4.67.3
+einops==0.8.2
+timm==1.0.24

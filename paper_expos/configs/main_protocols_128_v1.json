@@ -1,0 +1,48 @@
+{
+  "concept_set_suffix": "_iterative_qwen35_pe_l14_128_v1",
+  "seeds": [42, 43, 44, 45, 46],
+  "datasets": [
+    {
+      "key": "barista",
+      "dataset": "barista",
+      "splits": ["s1"],
+      "concept_set": "barista_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "breakfast_s1",
+      "dataset": "Breakfast",
+      "splits": ["official_s1"],
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "breakfast_s2",
+      "dataset": "Breakfast",
+      "splits": ["official_s2"],
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "breakfast_s3",
+      "dataset": "Breakfast",
+      "splits": ["official_s3"],
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "breakfast_s4",
+      "dataset": "Breakfast",
+      "splits": ["official_s4"],
+      "concept_set": "breakfast_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "mpii_attr",
+      "dataset": "mpii_cooking_2",
+      "splits": ["attr"],
+      "concept_set": "mpii_cooking_2_iterative_qwen35_pe_l14_128_v1"
+    },
+    {
+      "key": "mpii_dishes",
+      "dataset": "mpii_cooking_2",
+      "splits": ["dishes"],
+      "concept_set": "mpii_cooking_2_iterative_qwen35_pe_l14_128_v1"
+    }
+  ]
+}

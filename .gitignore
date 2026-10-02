@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.streamlit/
+wandb/
+runs/*
+!runs/.gitkeep
+slurm_logs/*
+!slurm_logs/.gitkeep
+data/
+concepts/cache/
+configs/generated/auxiliary_ablation.json

@@ -1,0 +1,56 @@
+{
+  "purpose": "execution smoke test only; not a paper result",
+  "run": {
+    "dataset": "synthetic_delayed_edge",
+    "dataset_hparams": {
+      "seed": 42,
+      "train_sequences": 8,
+      "val_sequences": 4,
+      "test_sequences": 4,
+      "sequence_length": 16,
+      "num_sources": 2,
+      "num_memory_slots": 2,
+      "num_label_bits": 2,
+      "num_concepts": 12,
+      "event_stride": 4,
+      "plateau_length": 4
+    },
+    "concept_set": "synthetic_delayed_smoke",
+    "base_method": "trace",
+    "device": "cpu",
+    "num_epochs": 1,
+    "patience": 1,
+    "batch_size": 4,
+    "history_length": 4,
+    "horizon": 2,
+    "seed": 42,
+    "wandb_mode": "disabled"
+  },
+  "expected_args": {
+    "dataset": "synthetic_delayed_edge",
+    "base_method": "trace",
+    "device": "cpu",
+    "num_epochs": 1,
+    "history_length": 4,
+    "horizon": 2
+  },
+  "expected_splits": {
+    "train": 8,
+    "val": 4,
+    "test": 4
+  },
+  "required_artifacts": [
+    "args.json",
+    "history.json",
+    "metrics.json",
+    "model.pt",
+    "summary_metrics.json"
+  ],
+  "required_metric_paths": [
+    "train.activity.accuracy",
+    "val.forecast.accuracy",
+    "test.activity.accuracy",
+    "test.forecast_by_horizon.1.accuracy",
+    "test.forecast_by_horizon.2.accuracy"
+  ]
+}

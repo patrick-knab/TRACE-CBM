@@ -1,0 +1,52 @@
+{
+  "max_concepts": 128,
+  "proposal_count": 80,
+  "proposal_max_tokens": 16000,
+  "proposal_retry_attempts": 2,
+  "storyboards_per_round": 24,
+  "retrieval_storyboards": 6,
+  "min_verified_videos": 2,
+  "verify_batch_size": 4,
+  "max_rounds": 12,
+  "max_stalled_rounds": 3,
+  "redundancy_similarity": 0.95,
+  "semantic_warning_similarity": 0.90,
+  "seed": 42,
+  "vlm_endpoint": "http://127.0.0.1:8000",
+  "vlm_model": "Qwen/Qwen3.5-27B",
+  "vlm_revision": "fc05daec18b0a78c049392ed2e771dde82bdf654",
+  "pe_model": "facebook/PE-Core-L14-336",
+  "pe_revision": "bafb0f76541d399057e980a25947f67acec76575",
+  "vlm_timeout": 900,
+  "run_output_dir": "runs/concept_generation",
+  "concepts_output_dir": "concepts",
+  "datasets": [
+    {
+      "dataset": "barista",
+      "embedding_path": "data/embeddings/Barista/True_32_clip_pe-l14_state.pkl",
+      "bootstrap_concept_set": "cache/barista_visual_states_no_labels_v4_1",
+      "label_modes": ["action"],
+      "activity_label_fill_mode": "sil",
+      "test_split": "s1",
+      "output_concept_set": "barista_iterative_qwen35_pe_l14_{max_concepts}_v1"
+    },
+    {
+      "dataset": "breakfast",
+      "embedding_path": "data/embeddings/Breakfast/True_32_clip_pe-l14.pkl",
+      "bootstrap_concept_set": "cache/breakfast_visual_states_no_labels_v4_1",
+      "label_modes": ["action"],
+      "activity_label_fill_mode": "sil",
+      "test_split": "official_s1",
+      "output_concept_set": "breakfast_iterative_qwen35_pe_l14_{max_concepts}_v1"
+    },
+    {
+      "dataset": "mpii_cooking_2",
+      "embedding_path": "data/embeddings/MPII_Cooking_2/True_32_clip_pe-l14_state.pkl",
+      "bootstrap_concept_set": "cache/mpii_cooking_2_visual_states_no_labels_v4_1",
+      "label_modes": ["action", "raw_action"],
+      "activity_label_fill_mode": "sil",
+      "test_split": "attr",
+      "output_concept_set": "mpii_cooking_2_iterative_qwen35_pe_l14_{max_concepts}_v1"
+    }
+  ]
+}
