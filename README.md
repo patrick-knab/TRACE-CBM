@@ -4,7 +4,12 @@ TRACE (Temporal Relational and Correctable Concept Bottleneck Model) is a tempor
 
 ## Paper
 
-The paper link will be added here when it is available.
+**Intervenable Concept Dynamics for Video Activity Forecasting** (NeurIPS 2026 Workshop on Foundation Models for Temporal Systems).
+
+- Project page with an interactive intervention playground and results explorer: https://patrick-knab.github.io/TRACE-CBM/
+- Paper: https://www.researchgate.net/publication/415302662_Intervenable_Concept_Dynamics_for_Video_Activity_Forecasting
+
+The project page lives in `docs/` and is served by GitHub Pages from the `main` branch (`Settings → Pages → Deploy from a branch → main, /docs`).
 
 ## What is included
 

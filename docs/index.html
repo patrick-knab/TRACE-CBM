@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE-CBM: Intervenable Concept Dynamics for Video Activity Forecasting</title>
+<meta name="description" content="TRACE-CBM is a temporal concept bottleneck model that forecasts video activities through named, editable concept states. Project page with interactive intervention playground, results explorer, and paper figures.">
+<meta property="og:title" content="TRACE-CBM: Intervenable Concept Dynamics for Video Activity Forecasting">
+<meta property="og:description" content="Forecast future activities in an editable concept space. Interactive playground, results, and code.">
+<meta property="og:image" content="https://patrick-knab.github.io/TRACE-CBM/assets/img/trace_motivation.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>
+  try { var t = localStorage.getItem('trace-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+
+<nav class="nav" aria-label="Page">
+  <div class="wrap">
+    <a class="brand" href="#top">TRACE<span>-CBM</span></a>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#playground">Playground</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#qualitative">Examples</a></li>
+      <li><a href="#bibtex">BibTeX</a></li>
+    </ul>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle color theme" title="Toggle light/dark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<header class="header" id="top">
+  <div class="wrap">
+    <h1>Intervenable Concept Dynamics for<br>Video Activity Forecasting</h1>
+    <p class="venue">NeurIPS 2026 Workshop on Foundation Models for Temporal Systems</p>
+    <p class="authors">
+      <a href="https://scholar.google.com/scholar?q=Patrick+Knab" target="_blank" rel="noopener">Patrick Knab</a><sup>1</sup>,
+      David Steinmann<sup>2</sup>,
+      Giovanni De Felice<sup>3</sup>,
+      Felix Divo<sup>2</sup>,
+      Udo Schlegel<sup>4</sup>,
+      Wolfgang Stammer<sup>5</sup>,
+      Sascha Marton<sup>1</sup>,
+      Christian Bartelt<sup>1</sup>
+    </p>
+    <p class="affils">
+      <sup>1</sup>Technische Universität Clausthal &nbsp;·&nbsp;
+      <sup>2</sup>Technische Universität Darmstadt &nbsp;·&nbsp;
+      <sup>3</sup>Università della Svizzera italiana<br>
+      <sup>4</sup>Ludwig-Maximilians-Universität München, MCML &nbsp;·&nbsp;
+      <sup>5</sup>Max Planck Institute for Informatics (SIC)
+    </p>
+    <div class="btns">
+      <a class="btn" href="https://www.researchgate.net/publication/415302662_Intervenable_Concept_Dynamics_for_Video_Activity_Forecasting" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        Paper
+      </a>
+      <a class="btn" href="https://github.com/patrick-knab/TRACE-CBM" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn secondary" href="#playground">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 6h6M6 9v6a3 3 0 0 0 3 3h6"/></svg>
+        Interactive demo
+      </a>
+      <a class="btn secondary" href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <h2 id="hero-title" class="sr-only">Latent versus concept-space forecasting</h2>
+    <div class="card hero-anim animate" id="heroAnim" aria-hidden="true"></div>
+    <p class="hero-caption">Black-box forecasters roll out opaque latents. <b>TRACE</b> rolls out <em>named</em> concept states, so a forecast can be inspected, explained, and edited at any horizon.</p>
+    <div class="anim-ctl"><button class="chip" id="animToggle" type="button" aria-pressed="true">Pause animation</button></div>
+  </div>
+</section>
+
+<section id="overview">
+  <div class="wrap two-col">
+    <div class="abstract">
+      <p class="eyebrow">Abstract</p>
+      <p>Concept bottleneck models route predictions through human-understandable concepts, making their intermediate states inspectable and editable. Extending this model family to forecasting requires modeling how concept activations evolve over time as objects, actions, and their interactions change, yet existing CBMs ground concepts only in observed inputs and do not forecast their future evolution.</p>
+      <p>We study this problem using videos of ongoing activities and forecast future activities through a named-concept state. We propose <b>TRACE-CBM</b> (Temporal Relational Activity Concept Evolution), which first refines observed concept activations with sparse spatio-temporal graphs. It then recursively predicts future concept states, conditioning each transition on the prior activity distribution, and decodes both observed and predicted states with a shared activity classifier. At inference time, the model supports editing concept values, activity activations, and learned edges without parameter updates, exposing the relational spatio-temporal dependencies used for forecasting.</p>
+      <p>Across multiple datasets, TRACE improves observed-activity Top-1 accuracy over concept-based methods by 1.2–8.5 percentage points and attains H3 forecast Top-1 accuracy within 1.9–2.2 points of matched black-box forecasters. Intervention experiments show concept-node edits correct 25.6–34.4% of initially incorrect H3 forecasts without flipping initially correct ones, and concept steering achieves the requested target activity in up to 90.0% of cases.</p>
+    </div>
+    <div>
+      <p class="eyebrow">At a glance</p>
+      <div class="stats">
+        <div class="card stat"><div class="v">+1.2–8.5<small>pp</small></div><div class="l">Observed-activity Top-1 over concept-based baselines</div></div>
+        <div class="card stat"><div class="v">≤ 2.2<small>pts</small></div><div class="l">H3 forecast gap to matched black-box feature transformer</div></div>
+        <div class="card stat"><div class="v">25.6–34.4<small>%</small></div><div class="l">Wrong H3 forecasts corrected by ≤5 concept edits, with 0% harm</div></div>
+        <div class="card stat"><div class="v">90.0<small>%</small></div><div class="l">Requested H3 target reached by concept steering (Breakfast)</div></div>
+      </div>
+      <figure class="figure">
+        <img src="assets/img/trace_motivation.png" alt="Figure 1: black-box video forecasting with opaque latents versus TRACE-CBM rolling out named concept states with node, edge, and activity interventions." loading="lazy">
+        <figcaption><b>Figure 1.</b> Latent vs. concept-space forecasting. TRACE rolls out editable concept states, enabling persistent edits to concepts, edges, and activity beliefs.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <p class="eyebrow">Method</p>
+    <h2>Three stages, one named concept space</h2>
+    <p class="lede">Click a stage in the figure (or a card below) to see what it does and the equation behind it. Every state, observed or forecast, lives in the same <em>C</em>-dimensional space of human-readable concepts and is decoded by the same linear activity head.</p>
+    <div class="arch-grid">
+      <div class="arch-stage card" style="padding:10px">
+        <img src="assets/img/trace_arch.png" alt="TRACE pipeline: (i) concept extraction and normalization, (ii) graph-refined concept states, (iii) recognition and activity-conditioned forecasting." id="archImg">
+        <button class="hotspot" data-stage="0" style="left:0.5%;top:1%;width:35%;height:71%" aria-pressed="false" aria-label="Stage i: concept extraction and normalization"><span class="hs-label">i</span></button>
+        <button class="hotspot" data-stage="1" style="left:36.5%;top:1%;width:23.5%;height:71%" aria-pressed="false" aria-label="Stage ii: graph-refined concept states"><span class="hs-label">ii</span></button>
+        <button class="hotspot" data-stage="2" style="left:61%;top:1%;width:38.5%;height:71%" aria-pressed="false" aria-label="Stage iii: recognition and activity-conditioned forecasting"><span class="hs-label">iii</span></button>
+        <button class="hotspot" data-stage="3" style="left:14.5%;top:73.5%;width:69.5%;height:25.5%" aria-pressed="false" aria-label="Legend: edge types"><span class="hs-label">edges</span></button>
+      </div>
+      <div class="arch-cards" role="tablist" id="archTabs"></div>
+      <div class="card arch-detail" id="archDetail" role="tabpanel"></div>
+    </div>
+  </div>
+</section>
+
+<section id="playground">
+  <div class="wrap">
+    <p class="eyebrow">Interactive</p>
+    <h2>Intervention playground</h2>
+    <p class="lede">Edit the concept state at the current window <em>t</em>, flip a learned relation, or overwrite the activity belief, and watch the t+1…t+3 forecast re-roll. The two examples are the sequences from Figure 3 of the paper.</p>
+    <div class="pg-head">
+      <div class="seg" id="pgExample" role="group" aria-label="Example">
+        <button type="button" data-ex="barista" aria-pressed="true">BARISTA · espresso</button>
+        <button type="button" data-ex="breakfast" aria-pressed="false">Breakfast · cereals</button>
+      </div>
+      <span class="sim-badge" title="Runs TRACE's update rule with small hand-fitted weights over three concepts. Not the trained 128-concept model.">Illustrative simulation, not the trained model</span>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>observed</span>
+        <span><i style="background:var(--forecast)"></i>forecast</span>
+        <span><i style="border-top:2px solid var(--gold);height:0;border-radius:0"></i>self-temporal</span>
+        <span><i style="border-top:2px dashed var(--text-2);height:0;border-radius:0"></i>cross-temporal</span>
+        <span><i style="border-top:2px solid var(--text-2);height:0;border-radius:0"></i>same-time</span>
+      </div>
+    </div>
+    <div class="pg">
+      <div class="card pg-canvas">
+        <div class="pg-frames" id="pgFrames"></div>
+        <div class="pg-svg" id="pgSvg"></div>
+      </div>
+      <aside class="card pg-controls" id="pgControls"></aside>
+    </div>
+    <div class="note"><b>Is this the real model?</b> No. The widget runs TRACE's update rule (logit-space message passing over same-time, self-temporal and cross-temporal relations, plus activity-to-concept feedback) with small weights fitted by hand to the three concepts shown, so that the unedited rollout reproduces the Figure 3 values. Edited rollouts illustrate the mechanism; they are not outputs of the trained 128-concept model. For the real thing, run the notebook or the Streamlit diagnosis UI in the <a href="https://github.com/patrick-knab/TRACE-CBM" target="_blank" rel="noopener">code repository</a>.</div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <p class="eyebrow">Results</p>
+    <h2>Results explorer</h2>
+    <p class="lede">Every number from the paper's tables, switchable by dataset and metric. Hover a bar for the exact mean ± standard deviation, or expand the table below each chart.</p>
+    <div class="tabs" role="tablist" id="rxTabs"></div>
+    <div class="card rx" id="rx"></div>
+  </div>
+</section>
+
+<section id="qualitative">
+  <div class="wrap">
+    <p class="eyebrow">Qualitative</p>
+    <h2>Which relational dependencies does TRACE use?</h2>
+    <p class="lede">Observed windows, activity distributions decoded from refined and forecasted concept states, and the learned relations the model used. Unlike an opaque latent trajectory, the future stays readable through named concepts, activity beliefs, and graph dependencies.</p>
+    <figure class="figure card" style="padding:12px">
+      <img src="assets/img/figure3.png" alt="Figure 3: BARISTA and Breakfast sequences with observed frames, activity probabilities for t to t+3, and concept-node trajectories with learned relations." loading="lazy">
+      <figcaption><b>Figure 3.</b> Exemplary forecasts. For BARISTA, the model predicts <em>add coffee</em> at t+3 while the ground truth is <em>grab tamper</em>; suppressing <em>coffee grinder</em> to 0.1 moves the preferred activity to <em>SIL</em> for H2 and H3. For Breakfast, suppressing <em>filled mug</em> lowers <em>pour_milk</em> and raises <em>pour_cereals</em>; additionally suppressing <em>ingredients mixed</em> makes <em>pour_cereals</em> the H2 and H3 prediction. Try both in the <a href="#playground">playground</a>.</figcaption>
+    </figure>
+    <details class="more">
+      <summary>Show the extended appendix version of this figure</summary>
+      <figure class="figure card" style="padding:12px">
+        <img src="assets/img/qualitative_large.png" alt="Extended qualitative examples from the appendix." loading="lazy">
+        <figcaption>Extended qualitative examples (appendix).</figcaption>
+      </figure>
+    </details>
+  </div>
+</section>
+
+<section id="bibtex">
+  <div class="wrap">
+    <p class="eyebrow">Citation</p>
+    <h2>BibTeX</h2>
+<pre class="bib"><button class="copy" id="copyBib" type="button">Copy</button><code id="bibText">@inproceedings{knab2026trace,
+  title     = {Intervenable Concept Dynamics for Video Activity Forecasting},
+  author    = {Knab, Patrick and Steinmann, David and De Felice, Giovanni and Divo, Felix and Schlegel, Udo and Stammer, Wolfgang and Marton, Sascha and Bartelt, Christian},
+  booktitle = {NeurIPS 2026 Workshop on Foundation Models for Temporal Systems},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<section id="ack">
+  <div class="wrap">
+    <p class="eyebrow">Acknowledgments</p>
+    <p class="ack">This research was supported in part by the German Federal Ministry for Economic Affairs and Climate Action of Germany (BMWK) and by the German Federal Ministry for Research, Technology, and Space (BMFTR). GDF acknowledges support from the Swiss National Science Foundation (SNSF) through the grant 205121_197242 for the project “PROSELF: Semi-automated Self-Tracking Systems to Improve Personal Productivity”, and by the Hasler Foundation through the project “Towards Scalable Multimodal Causal Deep Learning” (grant ID 2024-05-15-70). The project was further supported by the “ML2MT” project from the Volkswagen Stiftung, by the German Research Foundation (DFG) under Germany’s Excellence Strategy (EXC 3066/1 “The Adaptive Mind”, Project No. 533717223) and by the EU-funded “TANGO” project (EU Horizon 2023, GA No 57100431). It has benefited from the HMWK project Hessian.AI, the Cluster of Excellence “Reasonable AI” funded by the DFG under Germany’s Excellence Strategy EXC-3057 and the GRK 2853 “Neuroexplicit Models of Language, Vision, and Action” (Project No. 471607914).</p>
+    <div class="logos">
+      <img src="assets/img/logos/clausthal.png" alt="Technische Universität Clausthal">
+      <img src="assets/img/logos/tu-darmstadt.png" alt="Technische Universität Darmstadt">
+      <img src="assets/img/logos/usi.png" alt="Università della Svizzera italiana">
+      <img src="assets/img/logos/lmu.png" alt="Ludwig-Maximilians-Universität München">
+      <img src="assets/img/logos/mpiinf.png" alt="Max Planck Institute for Informatics">
+      <img src="assets/img/logos/BMFTR.png" alt="German Federal Ministry for Research, Technology, and Space">
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Code released under the Apache 2.0 license. Page template is original; figures © the authors.</div>
+</footer>
+
+<div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="assets/js/main.js"></script>
+<script defer src="assets/js/playground.js"></script>
+</body>
+</html>
