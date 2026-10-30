@@ -68,7 +68,7 @@
       const d = document.createElement('div');
       if (i < 3) {
         d.className = 'f';
-        d.innerHTML = `<img src="assets/img/frames/${state.ex}_${i}.jpg" alt="${ex.title} window ${labs[i]}"><div class="gt">GT: ${ex.gt[i]}</div>`;
+        d.innerHTML = `<img src="assets/img/frames/${state.ex}_${i}.jpg?v=2" alt="${ex.title} window ${labs[i]}"><div class="gt">GT: ${ex.gt[i]}</div>`;
       } else {
         d.className = 'f future'; d.innerHTML = `<div>${labs[i]}<br><span class="small">GT: ${ex.gt[i]}</span></div>`;
       }
@@ -271,6 +271,6 @@
   $('#pgExample').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setExample(b.dataset.ex); });
   document.addEventListener('trace-theme', () => { if (ex) update(); });
 
-  fetch('assets/data/playground.json').then(r => r.json()).then(d => { DATA = d; setExample('barista'); })
+  fetch('assets/data/playground.json?v=2').then(r => r.json()).then(d => { DATA = d; setExample('barista'); })
     .catch(err => { $('#pgSvg').innerHTML = `<p class="muted">Could not load playground.json (${err}). Serve this folder over HTTP to run the demo.</p>`; });
 })();

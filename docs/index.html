@@ -7,16 +7,18 @@
 <meta name="description" content="TRACE-CBM is a temporal concept bottleneck model that forecasts video activities through named, editable concept states. Project page with interactive intervention playground, results explorer, and paper figures.">
 <meta property="og:title" content="TRACE-CBM: Intervenable Concept Dynamics for Video Activity Forecasting">
 <meta property="og:description" content="Forecast future activities in an editable concept space. Interactive playground, results, and code.">
-<meta property="og:image" content="https://patrick-knab.github.io/TRACE-CBM/assets/img/trace_motivation.png">
+<meta property="og:image" content="https://patrick-knab.github.io/TRACE-CBM/assets/img/trace_motivation.png?v=2">
 <meta property="og:type" content="website">
-<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon.svg?v=2" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
 <script>
-  try { var t = localStorage.getItem('trace-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  // Light is the default; the toggle in the nav switches and remembers the choice.
+  var t = 'light'; try { t = localStorage.getItem('trace-theme') || 'light'; } catch (e) {}
+  document.documentElement.setAttribute('data-theme', t);
 </script>
 </head>
 <body>
@@ -103,7 +105,7 @@
         <div class="card stat"><div class="v">90.0<small>%</small></div><div class="l">Requested H3 target reached by concept steering (Breakfast)</div></div>
       </div>
       <figure class="figure">
-        <img src="assets/img/trace_motivation.png" alt="Figure 1: black-box video forecasting with opaque latents versus TRACE-CBM rolling out named concept states with node, edge, and activity interventions." loading="lazy">
+        <img src="assets/img/trace_motivation.png?v=2" alt="Figure 1: black-box video forecasting with opaque latents versus TRACE-CBM rolling out named concept states with node, edge, and activity interventions." loading="lazy">
         <figcaption><b>Figure 1.</b> Latent vs. concept-space forecasting. TRACE rolls out editable concept states, enabling persistent edits to concepts, edges, and activity beliefs.</figcaption>
       </figure>
     </div>
@@ -117,7 +119,7 @@
     <p class="lede">Click a stage in the figure (or a card below) to see what it does and the equation behind it. Every state, observed or forecast, lives in the same <em>C</em>-dimensional space of human-readable concepts and is decoded by the same linear activity head.</p>
     <div class="arch-grid">
       <div class="arch-stage card" style="padding:10px">
-        <img src="assets/img/trace_arch.png" alt="TRACE pipeline: (i) concept extraction and normalization, (ii) graph-refined concept states, (iii) recognition and activity-conditioned forecasting." id="archImg">
+        <img src="assets/img/trace_arch.png?v=2" alt="TRACE pipeline: (i) concept extraction and normalization, (ii) graph-refined concept states, (iii) recognition and activity-conditioned forecasting." id="archImg">
         <button class="hotspot" data-stage="0" style="left:0.5%;top:1%;width:35%;height:71%" aria-pressed="false" aria-label="Stage i: concept extraction and normalization"><span class="hs-label">i</span></button>
         <button class="hotspot" data-stage="1" style="left:36.5%;top:1%;width:23.5%;height:71%" aria-pressed="false" aria-label="Stage ii: graph-refined concept states"><span class="hs-label">ii</span></button>
         <button class="hotspot" data-stage="2" style="left:61%;top:1%;width:38.5%;height:71%" aria-pressed="false" aria-label="Stage iii: recognition and activity-conditioned forecasting"><span class="hs-label">iii</span></button>
@@ -175,13 +177,13 @@
     <h2>Which relational dependencies does TRACE use?</h2>
     <p class="lede">Observed windows, activity distributions decoded from refined and forecasted concept states, and the learned relations the model used. Unlike an opaque latent trajectory, the future stays readable through named concepts, activity beliefs, and graph dependencies.</p>
     <figure class="figure card" style="padding:12px">
-      <img src="assets/img/figure3.png" alt="Figure 3: BARISTA and Breakfast sequences with observed frames, activity probabilities for t to t+3, and concept-node trajectories with learned relations." loading="lazy">
+      <img src="assets/img/figure3.png?v=2" alt="Figure 3: BARISTA and Breakfast sequences with observed frames, activity probabilities for t to t+3, and concept-node trajectories with learned relations." loading="lazy">
       <figcaption><b>Figure 3.</b> Exemplary forecasts. For BARISTA, the model predicts <em>add coffee</em> at t+3 while the ground truth is <em>grab tamper</em>; suppressing <em>coffee grinder</em> to 0.1 moves the preferred activity to <em>SIL</em> for H2 and H3. For Breakfast, suppressing <em>filled mug</em> lowers <em>pour_milk</em> and raises <em>pour_cereals</em>; additionally suppressing <em>ingredients mixed</em> makes <em>pour_cereals</em> the H2 and H3 prediction. Try both in the <a href="#playground">playground</a>.</figcaption>
     </figure>
     <details class="more">
       <summary>Show the extended appendix version of this figure</summary>
       <figure class="figure card" style="padding:12px">
-        <img src="assets/img/qualitative_large.png" alt="Extended qualitative examples from the appendix." loading="lazy">
+        <img src="assets/img/qualitative_large.png?v=2" alt="Extended qualitative examples from the appendix." loading="lazy">
         <figcaption>Extended qualitative examples (appendix).</figcaption>
       </figure>
     </details>
@@ -206,12 +208,12 @@
     <p class="eyebrow">Acknowledgments</p>
     <p class="ack">This research was supported in part by the German Federal Ministry for Economic Affairs and Climate Action of Germany (BMWK) and by the German Federal Ministry for Research, Technology, and Space (BMFTR). GDF acknowledges support from the Swiss National Science Foundation (SNSF) through the grant 205121_197242 for the project “PROSELF: Semi-automated Self-Tracking Systems to Improve Personal Productivity”, and by the Hasler Foundation through the project “Towards Scalable Multimodal Causal Deep Learning” (grant ID 2024-05-15-70). The project was further supported by the “ML2MT” project from the Volkswagen Stiftung, by the German Research Foundation (DFG) under Germany’s Excellence Strategy (EXC 3066/1 “The Adaptive Mind”, Project No. 533717223) and by the EU-funded “TANGO” project (EU Horizon 2023, GA No 57100431). It has benefited from the HMWK project Hessian.AI, the Cluster of Excellence “Reasonable AI” funded by the DFG under Germany’s Excellence Strategy EXC-3057 and the GRK 2853 “Neuroexplicit Models of Language, Vision, and Action” (Project No. 471607914).</p>
     <div class="logos">
-      <img src="assets/img/logos/clausthal.png" alt="Technische Universität Clausthal">
-      <img src="assets/img/logos/tu-darmstadt.png" alt="Technische Universität Darmstadt">
-      <img src="assets/img/logos/usi.png" alt="Università della Svizzera italiana">
-      <img src="assets/img/logos/lmu.png" alt="Ludwig-Maximilians-Universität München">
-      <img src="assets/img/logos/mpiinf.png" alt="Max Planck Institute for Informatics">
-      <img src="assets/img/logos/BMFTR.png" alt="German Federal Ministry for Research, Technology, and Space">
+      <img src="assets/img/logos/clausthal.png?v=2" alt="Technische Universität Clausthal">
+      <img src="assets/img/logos/tu-darmstadt.png?v=2" alt="Technische Universität Darmstadt">
+      <img src="assets/img/logos/usi.png?v=2" alt="Università della Svizzera italiana">
+      <img src="assets/img/logos/lmu.png?v=2" alt="Ludwig-Maximilians-Universität München">
+      <img src="assets/img/logos/mpiinf.png?v=2" alt="Max Planck Institute for Informatics">
+      <img src="assets/img/logos/BMFTR.png?v=2" alt="German Federal Ministry for Research, Technology, and Space">
     </div>
   </div>
 </section>
@@ -223,7 +225,7 @@
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js" crossorigin="anonymous"></script>
-<script defer src="assets/js/main.js"></script>
-<script defer src="assets/js/playground.js"></script>
+<script defer src="assets/js/main.js?v=2"></script>
+<script defer src="assets/js/playground.js?v=2"></script>
 </body>
 </html>

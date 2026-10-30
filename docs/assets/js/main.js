@@ -22,9 +22,7 @@
     document.dispatchEvent(new CustomEvent('trace-theme'));
   };
   themeBtn.addEventListener('click', () => {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const sysDark = matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = cur ? cur === 'dark' : sysDark;
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     applyTheme(isDark ? 'light' : 'dark');
   });
 
@@ -61,7 +59,7 @@
     const fx = [20, 95, 170];
     fx.forEach((x, i) => {
       const g = svgEl('g');
-      g.appendChild(svgEl('image', { href: `assets/img/frames/hero_${i}.jpg`, x, y: 48, width: 62, height: 44, preserveAspectRatio: 'xMidYMid slice', 'clip-path': 'inset(0 round 6px)' }));
+      g.appendChild(svgEl('image', { href: `assets/img/frames/hero_${i}.jpg?v=2`, x, y: 48, width: 62, height: 44, preserveAspectRatio: 'xMidYMid slice', 'clip-path': 'inset(0 round 6px)' }));
       g.appendChild(svgEl('text', { x: x + 31, y: 106, class: 'lab-s', 'text-anchor': 'middle' }, obsActs[i]));
       g.appendChild(svgEl('text', { x: x + 31, y: 118, class: 'lab-s', 'text-anchor': 'middle' }, ['t-2', 't-1', 't'][i]));
       add(svg, g, B.observe);
@@ -98,7 +96,7 @@
     const rowsB = rowsA.map(y => y + OFF), barB = barA + OFF, labB = labA + OFF;
     cols.slice(0, 3).forEach((x, i) => {
       const g = svgEl('g');
-      g.appendChild(svgEl('image', { href: `assets/img/frames/hero_${i}.jpg`, x: x - 31, y: 40, width: 62, height: 44, preserveAspectRatio: 'xMidYMid slice', 'clip-path': 'inset(0 round 6px)' }));
+      g.appendChild(svgEl('image', { href: `assets/img/frames/hero_${i}.jpg?v=2`, x: x - 31, y: 40, width: 62, height: 44, preserveAspectRatio: 'xMidYMid slice', 'clip-path': 'inset(0 round 6px)' }));
       g.appendChild(svgEl('text', { x, y: 97, class: 'lab-s', 'text-anchor': 'middle' }, obsActs[i]));
       add(svg, g, B.observe);
     });
@@ -394,7 +392,7 @@
   function buildRx() {
     const tabs = $('#rxTabs');
     TABS.forEach(([k, l]) => { const b = document.createElement('button'); b.type = 'button'; b.role = 'tab'; b.dataset.tab = k; b.textContent = l; b.addEventListener('click', () => { rxState.tab = k; rxState.metric = 0; renderRx(); }); tabs.appendChild(b); });
-    fetch('assets/data/results.json').then(r => r.json()).then(data => { R = data; renderRx(); }).catch(err => { $('#rx').innerHTML = `<p class="muted">Could not load results.json (${err}). When opened from the file system, serve the folder with a local web server.</p>`; });
+    fetch('assets/data/results.json?v=2').then(r => r.json()).then(data => { R = data; renderRx(); }).catch(err => { $('#rx').innerHTML = `<p class="muted">Could not load results.json (${err}). When opened from the file system, serve the folder with a local web server.</p>`; });
   }
 
   /* ---------------- bibtex copy ---------------- */
