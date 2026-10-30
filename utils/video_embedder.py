@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import random
 import gc
@@ -105,6 +106,31 @@ class _PickleBackendsMixin:
         self.clip_model = None
         self.clip_tokenizer = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+_LEGACY_IMAGE_FOLDER_FPS = 12.0
+
+
+def _image_folder_fps(video_path: str, default: float = _LEGACY_IMAGE_FOLDER_FPS) -> float:
+    """Frame rate of an extracted image folder.
+
+    Reads ``source_info.json`` (written by ``utils/prepare_barista.py``) when it
+    exists. Otherwise falls back to the legacy 12 FPS assumption, which only
+    affects the saved window timestamps, not window-to-frame alignment.
+    """
+    info_path = os.path.join(video_path, "source_info.json")
+    try:
+        with open(info_path, "r", encoding="utf-8") as handle:
+            fps = float(json.load(handle).get("fps", 0.0))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return default
+    return fps if fps > 0 else default
+
+
+def _image_window_span(start_index: int, num_source_frames: int, fps: float) -> Tuple[float, float]:
+    """Inclusive (start, end) timestamps of a window covering ``num_source_frames`` source frames."""
+    end_index = start_index + max(1, int(num_source_frames)) - 1
+    return (start_index / fps, end_index / fps)
 
 
 class VideoEmbedder(_PickleBackendsMixin):
@@ -482,7 +508,7 @@ class VideoEmbedder(_PickleBackendsMixin):
                 ]
             )
             frame_count = len(img_files)
-            fps = 12.0  # fallback since no video container
+            fps = _image_folder_fps(video_path)
             for i in range(0, frame_count, step):
                 chunk_files = img_files[i : i + window_size]
                 if self.model_name in {"pe-l14", "pe-g14", "internvideo2-clip-s"}:
@@ -495,9 +521,8 @@ class VideoEmbedder(_PickleBackendsMixin):
                 if len(chunk) == 0:
                     continue
                 windows.append(chunk)
-                start_t = i / fps
-                end_t = (i + len(chunk) - 1) / fps
-                spans.append((start_t, end_t))
+                # Span of the full source window, not of the sampled frames.
+                spans.append(_image_window_span(i, len(chunk_files), fps))
             return windows, spans, fps, frame_count
 
         # ---- make windows ----
@@ -952,7 +977,7 @@ class VideoEmbedder(_PickleBackendsMixin):
         stride: Optional[int],
     ) -> Tuple[np.ndarray, List[Tuple[float, float]], float, int]:
         step = stride if stride is not None and stride > 0 else window_size
-        fps = 12.0
+        fps = _image_folder_fps(video_path)
         img_files = sorted(
             os.path.join(video_path, f)
             for f in os.listdir(video_path)
@@ -979,7 +1004,8 @@ class VideoEmbedder(_PickleBackendsMixin):
             if len(chunk) == 0:
                 continue
             windows.append(chunk)
-            spans.append((i / fps, (i + len(chunk) - 1) / fps))
+            # Span of the full source window, not of the sampled frames.
+            spans.append(_image_window_span(i, len(chunk_files), fps))
             if len(windows) >= pe_bs:
                 flush_windows()
                 gc.collect()

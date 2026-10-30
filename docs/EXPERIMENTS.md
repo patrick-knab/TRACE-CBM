@@ -122,7 +122,7 @@ Cases are selected once with the full model and reused across all four arms. Con
 
 ## 6. Loss ablation
 
-`batch_scripts/build_loss_ablation_batch.py` builds a matched five-arm loss study on PE-L14 with 128 concepts, the official BARISTA split, Breakfast s1, and MPII Attr, using seeds 42--44. The full objective is compared with one-term removals: concept-forecast supervision, transition-tolerant forecast loss, both SIL false-positive penalties, and classifier L1 regularization. This is 45 retrained runs; graph architecture, data protocol, optimizer, sampling, checkpoint metric, and forecast horizon remain fixed.
+`batch_scripts/build_loss_ablation_batch.py` builds a matched five-arm loss study on PE-L14 with 128 concepts, the BARISTA s1 hash split (see docs/DATASETS.md), Breakfast s1, and MPII Attr, using seeds 42--44. The full objective is compared with one-term removals: concept-forecast supervision, transition-tolerant forecast loss, both SIL false-positive penalties, and classifier L1 regularization. This is 45 retrained runs; graph architecture, data protocol, optimizer, sampling, checkpoint metric, and forecast horizon remain fixed.
 
 ```bash
 python batch_scripts/build_loss_ablation_batch.py

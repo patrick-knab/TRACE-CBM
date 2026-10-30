@@ -13,6 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 from utils.paths import dataset_root, embedding_root
+from utils.prepare_barista import print_report, validate_barista_layout
 
 
 DATASETS = {
@@ -40,6 +41,11 @@ def main() -> None:
     parser.add_argument("--dataset-root", type=Path, default=dataset_root())
     parser.add_argument("--embedding-root", type=Path, default=embedding_root())
     parser.add_argument("--include-additional", action="store_true")
+    parser.add_argument(
+        "--skip-barista-frames",
+        action="store_true",
+        help="Skip counting BARISTA frame files (faster; only checks label tables and splits).",
+    )
     args = parser.parse_args()
 
     missing = []
@@ -50,6 +56,13 @@ def main() -> None:
         print(f"dataset  {name:16} {'OK' if path.exists() else 'MISSING'}  {path}")
         if not path.exists():
             missing.append(path)
+    barista_dir = args.dataset_root / "Barista"
+    if barista_dir.exists():
+        # The BARISTA loader needs the converted layout (utils/prepare_barista.py), not just a labels/ folder.
+        report = validate_barista_layout(barista_dir, check_frames=not args.skip_barista_frames)
+        print_report(report)
+        if not report.get("ok"):
+            missing.append(barista_dir)
     for name, relative in embeddings.items():
         path = args.embedding_root / relative
         print(f"embedding {name:14} {'OK' if path.exists() else 'MISSING'}  {path}")

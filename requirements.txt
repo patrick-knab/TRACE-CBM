@@ -15,7 +15,7 @@ altair==6.1.0
 wandb==0.25.0
 transformers==5.1.0
 huggingface-hub==1.8.0
-clip==1.0
+clip @ git+https://github.com/openai/CLIP.git@ded190a052fdf4585bd685cee5bc96e0310d2c93  # OpenAI CLIP is not on PyPI (the PyPI "clip" package is unrelated)
 ftfy==6.3.1
 regex==2025.11.3
 tqdm==4.67.3

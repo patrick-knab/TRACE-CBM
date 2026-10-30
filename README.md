@@ -34,7 +34,9 @@ cp .env.example .env
 set -a; source .env; set +a
 ```
 
-Set `TRACE_DATASET_ROOT` and `TRACE_EMBEDDING_ROOT` in `.env` or in the environment. Dataset videos and annotations must be acquired from their official sources; the package does not redistribute them. Experiment tracking defaults to offline mode; enable an external tracking service explicitly if desired.
+`requirements.txt` installs OpenAI CLIP from GitHub (`clip @ git+https://github.com/openai/CLIP.git@...`), because the `clip` package on PyPI is an unrelated project; `git` must be available during installation.
+
+Set `TRACE_DATASET_ROOT` and `TRACE_EMBEDDING_ROOT` in `.env` or in the environment. Dataset videos and annotations must be acquired from their official sources; the package does not redistribute them. BARISTA additionally needs a one-time conversion of the official release into frame folders and label tables with `python utils/prepare_barista.py prepare --source-root <download>`; see [docs/DATASETS.md](docs/DATASETS.md). Experiment tracking defaults to offline mode; enable an external tracking service explicitly if desired.
 
 The release intentionally excludes videos and annotations, generated embeddings, trained checkpoints, and paper result directories. Reproducing the real-video experiments therefore requires access to the corresponding official datasets and their terms, storage for generated artifacts, and compatible GPU resources for PE-L14 embedding and TRACE training. VLM concept regeneration and both Qwen evaluations additionally require locally provisioned Qwen models, vLLM, and suitable GPU memory; these are optional for training with the included frozen concept vocabularies.
 
@@ -52,7 +54,7 @@ Open [notebooks/TRACE_interactive_walkthrough.ipynb](notebooks/TRACE_interactive
 
 ## End-to-end workflow
 
-1. **Prepare data and windows.** The embedding pipeline reads the official videos and annotations, divides videos into non-overlapping 32-frame windows, retains a final non-empty partial window, and samples eight frames per window for PE-L14. Training samples sequences of five observed windows and predicts the next three windows.
+1. **Prepare data and windows.** The embedding pipeline reads the official videos and annotations (BARISTA after `python utils/prepare_barista.py prepare`), divides videos into non-overlapping 32-frame windows at the source frame rate, retains a final non-empty partial window, and samples eight frames per window for PE-L14. Training samples sequences of five observed windows and predicts the next three windows.
 2. **Extract embeddings.** For the three main datasets, generate PE-L14 features with:
 
    ```bash

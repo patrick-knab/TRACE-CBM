@@ -729,8 +729,11 @@ def _prepare_barista(
     label_mode = _canonical_barista_label_mode(activity_label_mode)
     fill_mode = _canonical_mpii_fill_mode(activity_label_fill_mode)
     frame_labels_by_sequence = _load_barista_frame_labels(label_root, label_mode=label_mode)
-    short_gap_fill_frames = _embedding_window_size(embeddings)
-    split_sequences = _resolve_barista_sequence_split(frame_labels_by_sequence.keys(), test_split)
+    embedding_window_size = _embedding_window_size(embeddings)
+    short_gap_fill_frames = embedding_window_size
+    split_sequences = _resolve_barista_sequence_split(
+        frame_labels_by_sequence.keys(), test_split, label_root=label_root
+    )
     sequence_to_split = {
         sequence_id: split_name
         for split_name, sequence_ids in split_sequences.items()
@@ -763,6 +766,7 @@ def _prepare_barista(
             video_path,
             frame_labels,
             num_windows=num_windows,
+            window_size=embedding_window_size,
             background_label=(
                 _IGNORE_ACTIVITY_LABEL
                 if fill_mode == "annotated_only"
@@ -843,11 +847,12 @@ def _prepare_barista(
             "split_sequences": split_sequences,
             "split_sizes": {name: int(splits[name]["concepts"].shape[0]) for name in splits},
             "dropped_videos": dropped,
-            "split_note": "Deterministic BARISTA sequence-level hash split.",
+            "split_note": _describe_barista_split(test_split),
             "activity_label_source": "labels/activity_labels.csv",
             "activity_label_mode": label_mode,
             "activity_label_fill_mode": fill_mode,
             "barista_short_gap_fill_max_frames": short_gap_fill_frames,
+            "embedding_window_size": embedding_window_size,
             "annotation_root": str(label_root),
         },
     })
@@ -2340,11 +2345,14 @@ def _mpii_dish_from_sequence(sequence_id: str) -> str:
 
 def _resolve_barista_label_root(annotation_root: str | os.PathLike[str] | None) -> Path:
     root = Path(annotation_root) if annotation_root is not None else DEFAULT_BARISTA_LABEL_ROOT
-    if (root / "activity_segments.csv").exists():
-        return root
-    if (root / "labels" / "activity_segments.csv").exists():
-        return root / "labels"
-    raise FileNotFoundError(f"BARISTA label files not found under {root}")
+    for candidate in (root, root / "labels"):
+        if (candidate / "activity_labels.csv").exists() or (candidate / "activity_segments.csv").exists():
+            return candidate
+    raise FileNotFoundError(
+        f"BARISTA label files not found under {root}. Convert the official release first: "
+        "python utils/prepare_barista.py prepare --source-root <BARISTA download> "
+        "(see docs/DATASETS.md)."
+    )
 
 
 def _load_barista_annotation_segments(
@@ -2372,9 +2380,10 @@ def _load_barista_annotation_segments(
             label = _barista_segment_label(row, label_index, classes, label_mode)
             if not label:
                 continue
-            # BARISTA segment end_frame is exclusive in the exported CSV.
+            # start_frame/end_frame are inclusive 0-based source frame indices
+            # (utils/prepare_barista.py copies the official ``image_range`` unchanged).
             by_sequence.setdefault(sequence_id, []).append(
-                AnnotationSegment(start_frame, max(start_frame, end_frame - 1), label)
+                AnnotationSegment(start_frame, max(start_frame, end_frame), label)
             )
     return {
         sequence_id: sorted(segments, key=lambda segment: (segment.start_frame, segment.end_frame))
@@ -2452,8 +2461,25 @@ def _barista_segment_label(
     return str(row.get("display_name") or class_row.get("display_name") or "").strip()
 
 
+_BARISTA_VIDEO_SUFFIXES = {".mp4", ".avi", ".mov", ".mkv"}
+
+
 def _barista_sequence_id_from_path(video_path: str) -> str:
-    return Path(video_path).name
+    """Map an embedded media path to the ``sequence_id`` used in the label CSVs.
+
+    * prepared image folder ``Image_data/<sequence_id>/`` -> ``<sequence_id>``
+    * official release file ``<document_id>/video.mp4`` -> ``<document_id>__video_0``
+    * nested export ``<document_id>/<video_name>/video.mp4`` -> ``<document_id>__<video_name>``
+    """
+    path = Path(video_path)
+    if path.suffix.lower() not in _BARISTA_VIDEO_SUFFIXES:
+        return path.name
+    parent = path.parent
+    if parent.name.startswith("video_") and parent.parent.name:
+        return f"{parent.parent.name}__{parent.name}"
+    if path.stem == "video":
+        return f"{parent.name}__video_0"
+    return f"{parent.name}__{path.stem}"
 
 
 def _barista_window_labels_from_segments(
@@ -2465,8 +2491,9 @@ def _barista_window_labels_from_segments(
     fps: float,
     background_label: str | None,
     empty_overlap_strategy: str,
+    window_size: int | None = None,
 ) -> List[str]:
-    frame_ranges = _barista_window_frame_ranges_from_images(video_path, num_windows)
+    frame_ranges = _barista_window_frame_ranges_from_images(video_path, num_windows, window_size=window_size)
     if frame_ranges is None:
         return _window_labels_from_segments(
             segments,
@@ -2495,11 +2522,12 @@ def _barista_window_labels_from_frame_labels(
     num_windows: int,
     background_label: str | None,
     empty_overlap_strategy: str,
+    window_size: int | None = None,
 ) -> List[str]:
-    frame_ranges = _barista_window_frame_ranges_from_images(video_path, num_windows)
+    frame_ranges = _barista_window_frame_ranges_from_images(video_path, num_windows, window_size=window_size)
     if frame_ranges is None:
         frame_count = len(frame_labels)
-        step = max(1, int(np.ceil(frame_count / float(num_windows))))
+        step = _barista_window_step(frame_count, num_windows, window_size)
         frame_ranges = [
             (start, min(frame_count - 1, start + step - 1))
             for start in range(0, frame_count, step)
@@ -2592,9 +2620,24 @@ def _empty_frame_label(
     return _IGNORE_ACTIVITY_LABEL
 
 
+def _barista_window_step(frame_count: int, num_windows: int, window_size: int | None) -> int:
+    """Source frames per embedding window.
+
+    The embedder cuts non-overlapping ``window_size``-frame windows and keeps a
+    final partial window. When ``window_size`` is known and consistent with
+    ``num_windows`` it is used directly; otherwise fall back to an even split,
+    which only matches the embedder when the last window is nearly full.
+    """
+    if window_size is not None and window_size > 0:
+        if int(np.ceil(frame_count / float(window_size))) == int(num_windows):
+            return int(window_size)
+    return max(1, int(np.ceil(frame_count / float(num_windows))))
+
+
 def _barista_window_frame_ranges_from_images(
     video_path: str,
     num_windows: int,
+    window_size: int | None = None,
 ) -> List[Tuple[int, int]] | None:
     path = Path(video_path)
     if not path.is_dir():
@@ -2605,7 +2648,7 @@ def _barista_window_frame_ranges_from_images(
     )
     if not image_paths or num_windows <= 0:
         return None
-    step = max(1, int(np.ceil(len(image_paths) / float(num_windows))))
+    step = _barista_window_step(len(image_paths), num_windows, window_size)
     ranges: List[Tuple[int, int]] = []
     for start in range(0, len(image_paths), step):
         chunk = image_paths[start : start + step]
@@ -2622,34 +2665,98 @@ def _barista_window_frame_ranges_from_images(
     return ranges
 
 
+_BARISTA_HASH_SPLIT_KEYS = {"s1", "split1", "1", "sequence", "sequence_hash"}
+_BARISTA_OFFICIAL_SPLIT_KEYS = {"official", "official_split", "official_s1"}
+
+
+def _barista_split_mapping(test_split: Mapping[str, Sequence[str]]) -> Dict[str, List[str]]:
+    required = {"train", "val", "test"}
+    missing = required - set(test_split)
+    if missing:
+        raise ValueError(f"Split mapping is missing keys: {sorted(missing)}")
+    return {key: [str(item) for item in test_split[key]] for key in ("train", "val", "test")}
+
+
+_BARISTA_REPO_SPLIT_DIR = Path(__file__).resolve().parent.parent / "configs" / "splits"
+
+
+def _barista_official_split_path(label_root: Path | None) -> Path | None:
+    """``splits/official.json`` next to the labels, else the checked-in copy under ``configs/splits/``."""
+    if label_root is not None:
+        candidate = Path(label_root).parent / "splits" / "official.json"
+        if candidate.exists():
+            return candidate
+    repo_copy = _BARISTA_REPO_SPLIT_DIR / "barista_official.json"
+    if repo_copy.exists():
+        return repo_copy
+    return Path(label_root).parent / "splits" / "official.json" if label_root is not None else None
+
+
+def _describe_barista_split(test_split: str | Mapping[str, Sequence[str]]) -> str:
+    if isinstance(test_split, Mapping):
+        return "Explicit BARISTA train/val/test sequence mapping."
+    split_key = str(test_split).strip().lower()
+    if split_key in _BARISTA_HASH_SPLIT_KEYS:
+        return (
+            "Deterministic BARISTA sequence-level hash split (s1): sequence ids sorted by SHA-1, "
+            "~70% train / 15% val / 15% test. This is the protocol used for the paper results; "
+            "it does not use the official train/test field of the BARISTA release."
+        )
+    if split_key in _BARISTA_OFFICIAL_SPLIT_KEYS:
+        return (
+            "Official BARISTA test set (split field of coco_annotation.json); validation "
+            "sequences are carved from the official training set by utils/prepare_barista.py."
+        )
+    return f"BARISTA split mapping loaded from {test_split}."
+
+
 def _resolve_barista_sequence_split(
     sequence_ids: Sequence[str],
     test_split: str | Mapping[str, Sequence[str]],
+    *,
+    label_root: Path | None = None,
 ) -> Dict[str, List[str]]:
+    """Resolve the BARISTA train/val/test sequence assignment.
+
+    ``test_split`` may be
+
+    * ``"s1"`` (paper protocol): deterministic SHA-1 ordering of the sequence ids,
+      ~70/15/15 train/val/test, see :func:`utils.prepare_barista.hash_split`;
+    * ``"official"``: ``Barista/splits/official.json`` exported by
+      ``utils/prepare_barista.py`` (official test set preserved);
+    * a path to a JSON file with ``train``/``val``/``test`` lists; or
+    * an in-memory mapping with those keys.
+    """
     unique_sequences = sorted(set(str(sequence_id) for sequence_id in sequence_ids))
     if isinstance(test_split, Mapping):
-        required = {"train", "val", "test"}
-        missing = required - set(test_split)
-        if missing:
-            raise ValueError(f"Split mapping is missing keys: {sorted(missing)}")
-        return {key: [str(item) for item in test_split[key]] for key in ("train", "val", "test")}
+        return _barista_split_mapping(test_split)
 
-    split_key = str(test_split).strip().lower()
-    if split_key not in {"s1", "split1", "1", "sequence", "sequence_hash"}:
-        raise ValueError(
-            "BARISTA supports split 's1' as a deterministic sequence-level split, "
-            "or an explicit train/val/test mapping."
-        )
-    ordered = sorted(unique_sequences, key=lambda value: sha1(value.encode("utf-8")).hexdigest())
-    n_sequences = len(ordered)
-    n_test = max(1, int(round(0.15 * n_sequences)))
-    n_val = max(1, int(round(0.15 * n_sequences)))
-    n_train = max(1, n_sequences - n_val - n_test)
-    return {
-        "train": sorted(ordered[:n_train]),
-        "val": sorted(ordered[n_train : n_train + n_val]),
-        "test": sorted(ordered[n_train + n_val :]),
-    }
+    split_value = str(test_split).strip()
+    split_key = split_value.lower()
+    if split_key in _BARISTA_HASH_SPLIT_KEYS:
+        from utils.prepare_barista import hash_split
+
+        return hash_split(unique_sequences)
+    if split_key in _BARISTA_OFFICIAL_SPLIT_KEYS:
+        path = _barista_official_split_path(label_root)
+        if path is None or not path.exists():
+            raise FileNotFoundError(
+                "The official BARISTA split export was not found"
+                + (f" at {path}" if path is not None else "")
+                + ". Run `python utils/prepare_barista.py prepare ...` (it writes splits/official.json), "
+                "or pass --test-split <path to a train/val/test JSON mapping>."
+            )
+        return _barista_split_mapping(json.loads(path.read_text(encoding="utf-8")))
+    if split_key.endswith(".json"):
+        path = Path(split_value).expanduser()
+        if not path.exists():
+            raise FileNotFoundError(f"BARISTA split mapping file does not exist: {path}")
+        return _barista_split_mapping(json.loads(path.read_text(encoding="utf-8")))
+    raise ValueError(
+        "BARISTA supports --test-split 's1' (deterministic sequence-level hash split used in the paper), "
+        "'official' (split field of the official release, exported by utils/prepare_barista.py), "
+        "a path to a train/val/test JSON mapping, or an explicit mapping."
+    )
 
 
 def _breakfast_annotation_key(video_path: str) -> str:
